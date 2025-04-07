@@ -69,3 +69,5 @@ public class Cabina extends Equipaje {
         return precioFinal;
     }
 }
+
+// Ultimo cambio
