@@ -1,6 +1,6 @@
 public class BotonPiso extends Boton {
 
-    public BotonPiso(Ascensor ascensor, int pisoDestino) {
+public BotonPiso(Ascensor ascensor, int pisoDestino) {
         super(ascensor, pisoDestino);
     }
 
