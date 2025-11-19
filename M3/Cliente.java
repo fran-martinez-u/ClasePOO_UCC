@@ -16,4 +16,10 @@ public class Cliente{
 
     
 
+}public class Cliente {
+
+    protected String cedula;
+    protected String nombre;
+
+    
 }
