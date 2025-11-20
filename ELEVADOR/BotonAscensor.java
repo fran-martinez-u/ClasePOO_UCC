@@ -1,15 +1,23 @@
-public class BotonAscensor extends Boton {
+package ELEVADOR;
 
-    public BotonAscensor(Ascensor ascensor, int pisoDestino) {
-        super(ascensor, pisoDestino);
+public class BotonAscensor extends Boton {
+    private int numeroPiso;
+
+    public BotonAscensor(int numeroPiso) {
+        this.numeroPiso = numeroPiso;
+    }
+
+    public int getNumeroPiso() {
+        return numeroPiso;
+    }
+
+    public void solicitar() {
+        System.out.println("Piso " + numeroPiso + " seleccionado");
+        presionar();
     }
 
     @Override
-    public void presionar() {
-        if (activo) {
-            System.out.println("Botón dentro del ASCENSOR presionado - Piso " + pisoDestino);
-            ascensor.solicitarPiso(pisoDestino);
-            iluminar();
-        }
+    public String toString() {
+        return "BotonAscensor [Piso= " + numeroPiso + ", iluminado = " + iluminado + "]";
     }
 }

@@ -1,35 +1,31 @@
-public class Boton {
-    protected boolean iluminado;
-    protected boolean activo;
-    protected Ascensor ascensor;
-    protected int pisoDestino;
+package ELEVADOR;
 
-    public Boton(Ascensor ascensor, int pisoDestino) {
-        this.ascensor = ascensor;
-        this.pisoDestino = pisoDestino;
-        this.activo = true;
-    }
+public abstract class Boton {
+    protected boolean iluminado = false;
+    protected boolean activo = true;
+
+    public abstract void solicitar();
 
     public void presionar() {
         if (activo) {
-            System.out.println("Botón presionado - Piso " + pisoDestino);
-            ascensor.solicitarPiso(pisoDestino);
-            iluminar();
+            iluminado = true;
         }
     }
 
-    public void iluminar() { iluminado = true; }
-    public void apagar() { iluminado = false; }
-    public void activar() { activo = true; }
-    public void desactivar() { activo = false; }
+    public void apagar() {
+        iluminado = false;
+    }
 
-    public boolean estaIluminado() { return iluminado; }
-    public boolean estaActivo() { return activo; }
-    public int getPisoDestino() { return pisoDestino; }
+    public boolean estaIluminado() {
+        return iluminado;
+    }
+
+    public boolean estaActivo() {
+        return activo;
+    }
 
     @Override
     public String toString() {
-        return "Botón hacia piso " + pisoDestino +
-               " [iluminado=" + iluminado + ", activo=" + activo + "]";
+        return "Boton [iluminado=" + iluminado + ", activo=" + activo + "]";
     }
 }

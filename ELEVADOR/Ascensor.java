@@ -1,51 +1,36 @@
 package ELEVADOR;
 
 public class Ascensor {
-    private int pisoActual;
-    private String direccion; // "subiendo", "bajando", "parado"
-    private Puerta puerta;
-    private boolean funcionando;
+    private int pisoActual = 1; 
+    private String direccion = "parado";
+    private Puerta puerta = new Puerta();
     private int[] solicitudes;
-    private int numSolicitudes;
+    private int numSolicitudes = 0;
     private int totalPisos;
+    private Boton[] botones; 
 
     public Ascensor(int totalPisos) {
-        this.pisoActual = 0; // Empieza desde el primer piso
-        this.direccion = "parado";
-        this.puerta = new Puerta();
-        this.funcionando = true;
         this.totalPisos = totalPisos;
         this.solicitudes = new int[totalPisos + 1];
-        this.numSolicitudes = 0;
+        this.botones = new Boton[totalPisos]; 
+
+        for (int i = 0; i < totalPisos; i++) {
+            botones[i] = new BotonAscensor(i + 1);
+        }
     }
 
-    // Se solicita un piso al ascensor
     public void solicitarPiso(int pisoDestino) {
-        if (!funcionando)
+        if (pisoDestino < 0 || pisoDestino > totalPisos)
             return;
-
-        // Valida que el piso existe
-        if (pisoDestino < 0 || pisoDestino > totalPisos) {
-            System.out.println("Piso " + pisoDestino + " no existe");
-            return;
-        }
 
         // Evitar duplicados
-        boolean existe = false;
         for (int i = 0; i < numSolicitudes; i++) {
-            if (solicitudes[i] == pisoDestino) {
-                existe = true;
-                break;
-            }
+            if (solicitudes[i] == pisoDestino)
+                return;
         }
 
-        if (!existe) {
-            solicitudes[numSolicitudes] = pisoDestino;
-            numSolicitudes++;
-            System.out.println("Solicitud recibida: Piso " + pisoDestino);
-        }
+        solicitudes[numSolicitudes++] = pisoDestino;
 
-        // Definir dirección inicial si no está en movimiento
         if ("parado".equals(direccion)) {
             direccion = (pisoDestino > pisoActual) ? "subiendo" : "bajando";
         }
@@ -53,7 +38,11 @@ public class Ascensor {
         ejecutarRecorrido();
     }
 
-    // Ejecuta el recorrido de todas las solicitudes
+    public void solicitarPisoDesdeBoton(int pisoDestino) {
+        System.out.println("Solicitud de piso : Piso " + pisoDestino);
+        solicitarPiso(pisoDestino);
+    }
+
     private void ejecutarRecorrido() {
         while (numSolicitudes > 0) {
             ordenarSolicitudes();
@@ -65,29 +54,9 @@ public class Ascensor {
                 solicitudes[i] = solicitudes[i + 1];
             }
             numSolicitudes--;
-
-            // Verifica el cambio de dirección
-            if (numSolicitudes > 0) {
-                boolean haySolicitudesArriba = false;
-                boolean haySolicitudesAbajo = false;
-
-                for (int i = 0; i < numSolicitudes; i++) {
-                    if (solicitudes[i] > pisoActual)
-                        haySolicitudesArriba = true;
-                    if (solicitudes[i] < pisoActual)
-                        haySolicitudesAbajo = true;
-                }
-
-                if ("subiendo".equals(direccion) && !haySolicitudesArriba) {
-                    direccion = "bajando";
-                } else if ("bajando".equals(direccion) && !haySolicitudesAbajo) {
-                    direccion = "subiendo";
-                }
-            }
         }
         direccion = "parado";
     }
-
     // Ordena solicitudes según la dirección actual (Subir o Bajar)
     private void ordenarSolicitudes() {
         for (int i = 0; i < numSolicitudes - 1; i++) {
@@ -107,41 +76,33 @@ public class Ascensor {
             }
         }
     }
-
     // Mueve el ascensor a un piso específico
     private void moverAPiso(int pisoDestino) {
         System.out.println("Ascensor se mueve de " + pisoActual + " a " + pisoDestino);
-        pisoActual = pisoDestino;
+        pisoDestino = pisoActual;
         detener();
     }
 
-    // Detiene el ascensor en un piso
-    public void detener() {
+    private void detener() {
         System.out.println("--- Parada en piso " + pisoActual + " ---");
         puerta.abrir();
-        esperar(500);
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+        }
         puerta.cerrar();
     }
 
-    // Espera un tiempo simulado
-    private void esperar(int milisegundos) {
-        try {
-            Thread.sleep(milisegundos);
-        } catch (InterruptedException e) {
-            
+    public void usarBoton(int indiceBoton) {
+        if (indiceBoton >= 0 && indiceBoton < botones.length) {
+            botones[indiceBoton].solicitar();
         }
     }
 
-    // Muestra el estado del ascensor
-    @Override
-    public String toString() {
-        return "Ascensor [Piso: " + pisoActual +
-                ", Dirección: " + direccion +
-                ", Puerta: " + (puerta.isAbierta() ? "Abierta" : "Cerrada") +
-                ", Solicitudes: " + numSolicitudes + "]";
+    public Boton[] getBotones() {
+        return botones;
     }
 
-    // Getters
     public int getPisoActual() {
         return pisoActual;
     }
@@ -150,15 +111,11 @@ public class Ascensor {
         return direccion;
     }
 
-    public boolean isFuncionando() {
-        return funcionando;
+    public int getNumSolicitudes() {
+        return numSolicitudes;
     }
 
     public Puerta getPuerta() {
         return puerta;
-    }
-
-    public int getNumSolicitudes() {
-        return numSolicitudes;
-    }
+    } 
 }
